@@ -5,7 +5,6 @@ import com.back.domain.post.post.entity.Post;
 import com.back.domain.post.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -23,8 +22,7 @@ public class ApiV1PostController {
         List<Post> result = postService.findAll();
 
         List<PostDto> postDtoList = result.stream()
-                .map(p -> (
-                        new PostDto(p.getId(), p.getTitle(), p.getContent(), p.getCreateDate(), p.getModifyDate())))
+                .map(Post::toDto)
                 .toList();
 
         return postDtoList;
