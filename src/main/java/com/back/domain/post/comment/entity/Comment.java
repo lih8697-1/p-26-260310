@@ -16,6 +16,8 @@ public class Comment extends BaseEntity {
     private String content;
 
     @ManyToOne
+//    @Getter(AccessLevel.PRIVATE)
+//    @JsonIgnore
     private Post post;
 
     public void update(String content) {
