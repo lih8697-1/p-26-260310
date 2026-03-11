@@ -8,7 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.autoconfigure.jmx.ParentAwareNamingStrategy;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +19,7 @@ import java.util.List;
 public class ApiV1PostController {
 
     private final PostService postService;
+    private final ParentAwareNamingStrategy parentAwareNamingStrategy;
 
     @GetMapping
     public List<PostDto> list() {
@@ -37,7 +38,7 @@ public class ApiV1PostController {
         return new PostDto(post);
     }
 
-    record postWriteReqBody(
+    record PostWriteReqBody(
             @Size(min = 2, max = 10, message = "03-title-제목은 2자 이상 10자 이하로 입력해주세요.")
             @NotBlank(message = "01-title-제목은 필수입니다.")
             String title,
@@ -45,35 +46,35 @@ public class ApiV1PostController {
             @NotBlank(message = "02-content-내용은 필수입니다.")
             @Size(min = 2, max = 100, message = "04-content-내용은 2자 이상 100자 이하로 입력해주세요.")
             String content
-    ) {}
+    ) {
+    }
 
     record PostWriteResBody(
             PostDto postDto,
-            long postCount
-    ){}
+            long postsCount
+    ) {
+    }
 
-    @PostMapping()
-    public RsData<PostWriteResBody> write(@RequestBody @Valid postWriteReqBody reqBody) {
+    @PostMapping
+    public RsData<PostWriteResBody> write(@RequestBody @Valid PostWriteReqBody reqBody) {
         Post post = postService.write(reqBody.title, reqBody.content);
-        long postCount = postService.count();
+        long postsCount = postService.count();
 
         return new RsData<>(
-                "%d번 글이 성공적으로 작성됐습니다.".formatted(post.getId()),
+                "%d번 글이 성공적으로 작성되었습니다.".formatted(post.getId()),
                 "201-1",
                 new PostWriteResBody(
                         new PostDto(post),
-                        postCount
+                        postsCount
                 )
         );
     }
 
-
     @DeleteMapping("/{id}")
-    @Transactional
     public RsData<Void> delete(
             @PathVariable int id
     ) {
-        Post post = postService.findById(id).get();
+
         postService.deleteById(id);
 
         return new RsData<>(
