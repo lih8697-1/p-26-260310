@@ -8,11 +8,11 @@ public record PostDto(
         int id,
         String title,
         String content,
-        LocalDateTime creatDate,
+        LocalDateTime createDate,
         LocalDateTime modifyDate
 ) {
 
-    public PostDto(Post post){
+    public PostDto(Post post) {
         this(
                 post.getId(),
                 post.getTitle(),
